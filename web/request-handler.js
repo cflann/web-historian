@@ -24,7 +24,6 @@ var post = function(req, res) {
     body += chunk;
   });
   req.on('end', function() {
-    // console.log(body.constructor === String);
     var url = body.substr(4);
     if (archive.isURLArchived(url)) {
       sendResponse(302, res, path.join(archive.paths.archivedSites, url));
@@ -42,6 +41,6 @@ var actions = {
 };
 
 exports.handleRequest = function (req, res) {
-  console.log('Serving', req.url, 'of type', req.method);
+  // console.log('Serving', req.url, 'of type', req.method);
   actions[req.method](req, res);
 };
