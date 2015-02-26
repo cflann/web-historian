@@ -26,14 +26,11 @@ var post = function(req, res) {
   req.on('end', function() {
     // console.log(body.constructor === String);
     var url = body.substr(4);
-    console.log(url);
-    console.log(archive.isUrlInList(url));
     if (archive.isURLArchived(url)) {
-      console.log('file is archived');
-      sendResponse(200, res, path.join(archive.paths.archivedSites, url));
+      sendResponse(302, res, path.join(archive.paths.archivedSites, url));
     } else {
       !archive.isUrlInList(url) && archive.addUrlToList(url);
-      sendResponse(404, res, path.join(__dirname, './public/loading.html'));
+      sendResponse(302, res, path.join(__dirname, './public/loading.html'));
     }
   });
 
