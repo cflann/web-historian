@@ -28,10 +28,14 @@ exports.initialize = function(pathsObj){
 exports.readListOfUrls = function(){
 };
 
-exports.isUrlInList = function(){
+exports.isUrlInList = function(url){
+  var data = fs.readFileSync(exports.paths.list, {encoding: 'utf8'});
+  console.log(data);
+  return data.indexOf(url) > -1;
 };
 
-exports.addUrlToList = function(){
+exports.addUrlToList = function(url){
+  console.log(url);
 };
 
 exports.isURLArchived = function(){
