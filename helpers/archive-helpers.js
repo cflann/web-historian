@@ -35,10 +35,13 @@ exports.isUrlInList = function(url){
 };
 
 exports.addUrlToList = function(url){
-  console.log(url);
+  fs.appendFile(exports.paths.list, url+'\n', function(err) {
+    console.log(err);
+  });
 };
 
-exports.isURLArchived = function(){
+exports.isURLArchived = function(url){
+  return fs.existsSync(path.join(exports.paths.archivedSites, url));
 };
 
 exports.downloadUrls = function(){
