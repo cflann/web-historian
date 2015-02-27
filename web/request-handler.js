@@ -1,6 +1,7 @@
 var path = require('path');
 var archive = require('../helpers/archive-helpers');
 var httpHelp = require('./http-helpers');
+var fs = require('fs');
 // require more modules/folders here!
 
 var sendResponse = function(statusCode, res, path) {
@@ -11,11 +12,27 @@ var sendResponse = function(statusCode, res, path) {
 };
 
 var get = function(req, res) {
-  if (req.url === '/') {
-    sendResponse(200, res, path.join(__dirname, './public/index.html'));
-  } else if (req.url === '/styles.css') {
-    sendResponse(200, res, path.join(__dirname, './public/styles.css'));
-  }
+  // if (req.url === '/') {
+  //   sendResponse(200, res, path.join(__dirname, './public/index.html'));
+  // } else if (req.url === '/styles.css') {
+  //   sendResponse(200, res, path.join(__dirname, './public/styles.css'));
+  // }
+  var url = req.url === '/' ? '/index.html' : req.url;
+  fs.exists(path.join(archive.paths.siteAssets, url), function(found) {
+    if (found) {
+      sendResponse(200, res, path.join(archive.paths.siteAssets, url));
+    } else {
+      archive.isURLArchived(url, function(exists) {
+        if (exists) {
+          sendResponse(200, res, path.join(archive.paths.archivedSites, url));
+        } else {
+          res.writeHead(404, httpHelp.headers);
+          res.end();
+        }
+      });
+    }
+
+  });
 };
 
 var post = function(req, res) {

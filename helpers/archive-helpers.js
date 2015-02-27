@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var request = require('http-request');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -25,18 +26,35 @@ exports.initialize = function(pathsObj){
 // The following function names are provided to you to suggest how you might
 // modularize your code. Keep it clean!
 
-exports.readListOfUrls = function(){
+exports.collectData = function() {
+
 };
 
-exports.isUrlInList = function(url){
-  var data = fs.readFileSync(exports.paths.list, {encoding: 'utf8'});
-  console.log(data);
-  return data.indexOf(url) > -1;
+exports.readListOfUrls = function(callback){
+  // return fs.readFileSync(exports.paths.list, {encoding: 'utf8'}).split('\n').slice(0, -1);
+  var encoding = {encoding: 'utf8'};
+  fs.readFile(exports.paths.list, encoding, function(err, data) {
+    if (err) console.log(err);
+    if (data) {
+      callback(data.split('\n').slice(0, -1));
+    }
+  });
 };
 
-exports.addUrlToList = function(url){
-  fs.appendFile(exports.paths.list, url+'\n', function(err) {
-    console.log(err);
+exports.isUrlInList = function(url, callback){
+  // var data = fs.readFileSync(exports.paths.list, {encoding: 'utf8'});
+  // return data.indexOf(url) > -1;
+  exports.readListOfUrls(function(sites) {
+    var found = _.any(sites, function(site) {
+      return site.match(url);
+    });
+    callback(found);
+  });
+};
+
+exports.addUrlToList = function(url, callback){
+  fs.appendFile(exports.paths.list, url+'\n', function(err, file) {
+    callback(file);
   });
 };
 
@@ -44,5 +62,13 @@ exports.isURLArchived = function(url){
   return fs.existsSync(path.join(exports.paths.archivedSites, url));
 };
 
-exports.downloadUrls = function(){
+exports.downloadUrls = function(sites){
+  console.log("Starting downloads...");
+  _.each(sites, function(site) {
+    console.log('Downloading', site);
+    request.get(site, path.join(exports.paths.archivedSites, site), function(err, res) {
+      if (err) console.log(err);
+    });
+  });
+  console.log('Finished downloading pages.');
 };
