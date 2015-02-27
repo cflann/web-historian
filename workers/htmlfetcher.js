@@ -4,6 +4,7 @@
 var archive = require('../helpers/archive-helpers.js');
 
 module.exports = function() {
-  var sites = archive.readListOfUrls();
-  archive.downloadUrls(sites);
+  archive.readListOfUrls(function(sites) {
+    archive.downloadUrls(sites);
+  });
 };
